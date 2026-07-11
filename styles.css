@@ -1,0 +1,506 @@
+:root {
+  --paper: #fff8e9;
+  --cream: #fffdf5;
+  --pink: #ff8fbc;
+  --pink-strong: #f45c99;
+  --mint: #9bd9cc;
+  --sky: #a7d7f3;
+  --lemon: #ffe88d;
+  --ink: #46342f;
+  --soft-ink: #8a6e68;
+  --line: #7a574d;
+  --shadow: rgba(122, 87, 77, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  font-family:
+    "Trebuchet MS",
+    "Microsoft YaHei",
+    "PingFang SC",
+    sans-serif;
+  background:
+    radial-gradient(circle at 15% 18%, rgba(255, 143, 188, 0.24), transparent 28%),
+    radial-gradient(circle at 84% 16%, rgba(155, 217, 204, 0.3), transparent 25%),
+    radial-gradient(circle at 78% 82%, rgba(255, 232, 141, 0.38), transparent 28%),
+    linear-gradient(135deg, #fff8e9 0%, #fff0f6 48%, #ecfbf6 100%);
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background-image:
+    linear-gradient(rgba(122, 87, 77, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122, 87, 77, 0.05) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(to bottom, transparent, black 14%, black 88%, transparent);
+}
+
+.page-shell {
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 28px 18px;
+  overflow: hidden;
+}
+
+.invite-card,
+.flow-card {
+  position: relative;
+  width: min(94vw, 520px);
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 245, 0.9);
+  box-shadow: 14px 14px 0 rgba(122, 87, 77, 0.16);
+  text-align: center;
+}
+
+.invite-card {
+  padding: 30px 28px 34px;
+}
+
+.invite-card::before,
+.invite-card::after,
+.flow-card::before,
+.flow-card::after {
+  position: absolute;
+  content: "";
+  width: 44px;
+  height: 44px;
+  background:
+    radial-gradient(circle at 50% 50%, var(--lemon) 0 18%, transparent 19%),
+    radial-gradient(circle at 50% 18%, #ffc4d9 0 18%, transparent 19%),
+    radial-gradient(circle at 82% 50%, #ffc4d9 0 18%, transparent 19%),
+    radial-gradient(circle at 50% 82%, #ffc4d9 0 18%, transparent 19%),
+    radial-gradient(circle at 18% 50%, #ffc4d9 0 18%, transparent 19%);
+}
+
+.invite-card::before {
+  top: 44px;
+  left: 28px;
+}
+
+.invite-card::after {
+  right: 30px;
+  bottom: 28px;
+  transform: scale(0.78) rotate(18deg);
+}
+
+.ribbon {
+  position: absolute;
+  top: -23px;
+  right: 36px;
+  width: 94px;
+  height: 56px;
+}
+
+.ribbon::before {
+  position: absolute;
+  left: 34px;
+  top: 16px;
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--line);
+  border-radius: 50%;
+  background: var(--pink);
+  content: "";
+  z-index: 2;
+}
+
+.ribbon span {
+  position: absolute;
+  top: 12px;
+  width: 48px;
+  height: 34px;
+  border: 3px solid var(--line);
+  background: #ffb3cf;
+}
+
+.ribbon span:first-child {
+  left: 2px;
+  border-radius: 72% 36% 42% 56%;
+  transform: rotate(-22deg);
+}
+
+.ribbon span:last-child {
+  right: 2px;
+  border-radius: 36% 72% 56% 42%;
+  transform: rotate(22deg);
+}
+
+.image-frame {
+  width: min(100%, 380px);
+  margin: 0 auto 22px;
+  padding: 10px;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fff5c7, #ffeef6 58%, #e9fff8);
+  box-shadow: 8px 8px 0 var(--pink);
+}
+
+.hero-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1080 / 768;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.kicker {
+  margin: 0 0 8px;
+  color: var(--pink-strong);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2 {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 900;
+  line-height: 1.08;
+}
+
+h1 {
+  font-size: clamp(2.25rem, 8vw, 4.2rem);
+}
+
+h2 {
+  font-size: clamp(2rem, 7vw, 3.4rem);
+}
+
+.message,
+.flow-card p {
+  max-width: 360px;
+  margin: 16px auto 0;
+  color: var(--soft-ink);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+.button-stage {
+  position: relative;
+  display: flex;
+  min-height: 86px;
+  margin-top: 26px;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.button-stage.is-dodging {
+  min-height: 132px;
+}
+
+.choice-button {
+  min-width: 128px;
+  min-height: 52px;
+  border: 3px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.02rem;
+  font-weight: 900;
+  box-shadow: 5px 7px 0 rgba(70, 52, 47, 0.88);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.choice-button:active {
+  transform: translate(4px, 5px);
+  box-shadow: 1px 2px 0 rgba(70, 52, 47, 0.88);
+}
+
+.choice-button:focus-visible {
+  outline: 4px solid rgba(244, 92, 153, 0.32);
+  outline-offset: 4px;
+}
+
+.yes-button {
+  background: linear-gradient(180deg, #ffabd0 0%, var(--pink) 100%);
+}
+
+.yes-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 5px 10px 0 rgba(70, 52, 47, 0.88);
+}
+
+.no-button {
+  background: #fff;
+}
+
+.no-button.is-running {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+}
+
+.flow-card {
+  display: grid;
+  gap: 18px;
+  padding: 42px 30px 36px;
+}
+
+.flow-card[hidden] {
+  display: none;
+}
+
+.flow-card::before {
+  left: 28px;
+  top: 28px;
+  transform: scale(0.72);
+}
+
+.flow-card::after {
+  right: 26px;
+  bottom: 24px;
+  transform: scale(0.72) rotate(20deg);
+}
+
+.success-mark {
+  display: grid;
+  width: 78px;
+  height: 78px;
+  margin: 0 auto;
+  place-items: center;
+  border: 3px solid var(--line);
+  border-radius: 50%;
+  background: var(--pink);
+  color: #fff;
+  font-size: 2.4rem;
+  box-shadow: 7px 7px 0 var(--mint);
+}
+
+.time-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 8px auto 0;
+  width: min(100%, 390px);
+}
+
+.time-picker label {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 5px 6px 0 var(--shadow);
+  text-align: left;
+}
+
+.time-picker span {
+  color: var(--pink-strong);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.time-picker input {
+  width: 100%;
+  min-height: 42px;
+  border: 0;
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.time-picker input:focus {
+  outline: 0;
+}
+
+.time-slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  width: min(100%, 390px);
+  margin: 0 auto;
+}
+
+.time-slots button,
+.food-grid button {
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+  box-shadow: 5px 6px 0 rgba(70, 52, 47, 0.88);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.time-slots button {
+  min-height: 48px;
+}
+
+.time-slots button:hover,
+.food-grid button:hover {
+  transform: translateY(-2px);
+  box-shadow: 5px 8px 0 rgba(70, 52, 47, 0.88);
+}
+
+.time-slots button.is-selected,
+.food-grid button.is-selected {
+  border-color: var(--pink-strong);
+  background: #ffd6e6;
+}
+
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: min(100%, 410px);
+  margin: 2px auto 0;
+}
+
+.food-grid button {
+  display: grid;
+  min-height: 92px;
+  place-items: center;
+  gap: 6px;
+  padding: 10px;
+}
+
+.food-grid span {
+  display: block;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.next-button {
+  justify-self: center;
+  margin-top: 2px;
+}
+
+.next-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.date-plan {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 8px auto 0;
+  width: min(100%, 380px);
+}
+
+.date-plan div {
+  min-height: 94px;
+  padding: 16px;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  text-align: left;
+  box-shadow: 5px 6px 0 var(--shadow);
+}
+
+.date-plan div:last-child {
+  grid-column: 1 / -1;
+}
+
+.date-plan dt {
+  margin: 0 0 8px;
+  color: var(--pink-strong);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.date-plan dd {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+@media (max-width: 520px) {
+  .page-shell {
+    padding: 18px 14px;
+  }
+
+  .invite-card,
+  .flow-card {
+    box-shadow: 8px 8px 0 rgba(122, 87, 77, 0.16);
+  }
+
+  .invite-card {
+    padding: 24px 16px 28px;
+  }
+
+  .invite-card::before,
+  .invite-card::after,
+  .flow-card::before,
+  .flow-card::after {
+    width: 34px;
+    height: 34px;
+  }
+
+  .image-frame {
+    width: min(100%, 330px);
+    box-shadow: 6px 6px 0 var(--pink);
+  }
+
+  .button-stage {
+    min-height: 142px;
+    margin-top: 20px;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .button-stage.is-dodging {
+    min-height: 210px;
+    justify-content: flex-start;
+  }
+
+  .choice-button {
+    width: min(100%, 220px);
+  }
+
+  .date-plan {
+    grid-template-columns: 1fr;
+  }
+
+  .date-plan div:last-child {
+    grid-column: auto;
+  }
+
+  .time-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .time-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .food-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .food-grid button {
+    min-height: 82px;
+  }
+}

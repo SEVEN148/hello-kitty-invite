@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello Kitty Invitation</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="invite-card" id="inviteCard" aria-live="polite">
+        <div class="ribbon" aria-hidden="true">
+          <span></span>
+          <span></span>
+        </div>
+
+        <div class="image-frame">
+          <img
+            src="./assets/sanrio-characters.png"
+            alt="Sanrio characters"
+            class="hero-image"
+          />
+        </div>
+
+        <p class="kicker">for you</p>
+        <h1 id="questionTitle">可以和我一起约会嘛？</h1>
+        <p class="message" id="questionMessage">
+          今天的心情是粉色的，想把最可爱的位置留给你。
+        </p>
+
+        <div class="button-stage" id="buttonStage">
+          <button class="choice-button yes-button" id="yesButton" type="button">
+            愿意
+          </button>
+          <button class="choice-button no-button" id="noButton" type="button">
+            不要
+          </button>
+        </div>
+      </section>
+
+      <section class="flow-card" id="timeCard" hidden>
+        <p class="kicker">step 01</p>
+        <h2>我们什么时候出发？</h2>
+        <p class="message">挑一个你喜欢的时间，我会准时带着好心情出现。</p>
+
+        <div class="time-picker">
+          <label>
+            <span>日期</span>
+            <input id="dateInput" type="date" />
+          </label>
+          <label>
+            <span>时间</span>
+            <input id="timeInput" type="time" step="900" />
+          </label>
+        </div>
+
+        <div class="time-slots" aria-label="快速选择时间">
+          <button type="button" data-time="11:30">11:30</button>
+          <button type="button" data-time="14:00">14:00</button>
+          <button type="button" data-time="17:00">17:00</button>
+          <button type="button" data-time="19:30">19:30</button>
+        </div>
+
+        <button class="choice-button yes-button next-button" id="toFoodButton" type="button">
+          选好啦
+        </button>
+      </section>
+
+      <section class="flow-card" id="foodCard" hidden>
+        <p class="kicker">step 02</p>
+        <h2>我们吃点什么？</h2>
+        <p class="message">挑一个今天的约会氛围。</p>
+
+        <div class="food-grid" id="foodGrid">
+          <button type="button" data-food="披萨"><span>🍕</span>披萨</button>
+          <button type="button" data-food="寿司"><span>🍣</span>寿司</button>
+          <button type="button" data-food="火锅"><span>🥘</span>火锅</button>
+          <button type="button" data-food="烤肉"><span>🥩</span>烤肉</button>
+          <button type="button" data-food="早茶"><span>🥟</span>早茶</button>
+          <button type="button" data-food="拉面"><span>🍜</span>拉面</button>
+          <button type="button" data-food="麻辣烫"><span>🌶️</span>麻辣烫</button>
+          <button type="button" data-food="小龙虾"><span>🦞</span>小龙虾</button>
+          <button type="button" data-food="烧烤"><span>🍢</span>烧烤</button>
+          <button type="button" data-food="其他"><span>🍌</span>其他</button>
+        </div>
+
+        <button class="choice-button yes-button next-button" id="toSummaryButton" type="button" disabled>
+          生成约会卡
+        </button>
+      </section>
+
+      <section class="flow-card summary-card" id="summaryCard" hidden>
+        <div class="success-mark" aria-hidden="true">♥</div>
+        <h2>约会计划完成</h2>
+        <p>那就这样说定啦，今天的可爱额度已经预约成功。</p>
+
+        <dl class="date-plan">
+          <div>
+            <dt>Date</dt>
+            <dd id="summaryDate">-</dd>
+          </div>
+          <div>
+            <dt>Time</dt>
+            <dd id="summaryTime">-</dd>
+          </div>
+          <div>
+            <dt>Food</dt>
+            <dd id="summaryFood">-</dd>
+          </div>
+        </dl>
+
+        <button class="choice-button no-button next-button" id="restartButton" type="button">
+          重新选择
+        </button>
+      </section>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
