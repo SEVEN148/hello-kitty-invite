@@ -228,6 +228,7 @@ body::before {
 }
 
 .image-frame {
+  position: relative;
   width: min(100%, 380px);
   margin: 0 auto 22px;
   padding: 10px;
@@ -235,14 +236,51 @@ body::before {
   border-radius: 8px;
   background: linear-gradient(135deg, #fff5c7, #ffeef6 58%, #e9fff8);
   box-shadow: 8px 8px 0 var(--pink);
+  overflow: hidden;
 }
 
 .hero-image {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   aspect-ratio: 1080 / 768;
   object-fit: cover;
   border-radius: 6px;
+}
+
+.image-frame[data-hero-preset="soft"] {
+  background:
+    radial-gradient(circle at 22% 24%, #ffffff 0 6%, transparent 7%),
+    radial-gradient(circle at 76% 28%, #ffe88d 0 7%, transparent 8%),
+    radial-gradient(circle at 46% 70%, #ffffff 0 8%, transparent 9%),
+    linear-gradient(135deg, #ffe0ee 0%, #fff7cf 54%, #fff 100%);
+}
+
+.image-frame[data-hero-preset="fresh"] {
+  background:
+    radial-gradient(circle at 28% 30%, #ffffff 0 7%, transparent 8%),
+    radial-gradient(circle at 78% 72%, #fff6b8 0 8%, transparent 9%),
+    linear-gradient(135deg, #d9fff3 0%, #fffdf0 48%, #dff3ff 100%);
+}
+
+.image-frame[data-hero-preset="soft"] .hero-image,
+.image-frame[data-hero-preset="fresh"] .hero-image {
+  opacity: 0;
+}
+
+.image-frame[data-hero-preset="soft"]::after,
+.image-frame[data-hero-preset="fresh"]::after {
+  position: absolute;
+  inset: 10px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--line);
+  content: "约会背景";
+  font-size: 2rem;
+  font-weight: 900;
+  z-index: 0;
 }
 
 .kicker {

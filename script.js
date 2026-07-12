@@ -9,8 +9,10 @@ const yesButton = document.querySelector("#yesButton");
 const noButton = document.querySelector("#noButton");
 const questionTitle = document.querySelector("#questionTitle");
 const questionMessage = document.querySelector("#questionMessage");
-const bgUpload = document.querySelector("#bgUpload");
-const backgroundButtons = document.querySelectorAll(".bg-presets button");
+const imageFrame = document.querySelector(".image-frame");
+const heroImage = document.querySelector(".hero-image");
+const heroUpload = document.querySelector("#heroUpload");
+const heroPresetButtons = document.querySelectorAll(".bg-presets button");
 const startPlanButton = document.querySelector("#startPlanButton");
 const dateInput = document.querySelector("#dateInput");
 const timeInput = document.querySelector("#timeInput");
@@ -49,43 +51,41 @@ function showStep(activeStep) {
   });
 }
 
-function setBackground(bgName) {
-  document.body.style.backgroundImage = "";
-  document.body.dataset.bg = bgName;
-  localStorage.setItem("inviteBackground", bgName);
+function setHeroPreset(presetName) {
+  imageFrame.dataset.heroPreset = presetName;
+  heroImage.src = "./assets/sanrio-characters.png";
+  localStorage.setItem("inviteHeroPreset", presetName);
+  localStorage.removeItem("inviteHeroImage");
 
-  backgroundButtons.forEach((button) => {
-    button.classList.toggle("is-selected", button.dataset.bg === bgName);
+  heroPresetButtons.forEach((button) => {
+    button.classList.toggle("is-selected", button.dataset.heroPreset === presetName);
   });
 }
 
-function setCustomBackground(dataUrl) {
-  document.body.removeAttribute("data-bg");
-  document.body.style.backgroundImage = `linear-gradient(rgba(255, 248, 233, 0.5), rgba(255, 240, 246, 0.62)), url("${dataUrl}")`;
-  document.body.style.backgroundAttachment = "fixed";
-  document.body.style.backgroundPosition = "center";
-  document.body.style.backgroundSize = "cover";
-  localStorage.setItem("inviteBackground", "custom");
-  localStorage.setItem("inviteCustomBackground", dataUrl);
+function setCustomHeroImage(dataUrl) {
+  imageFrame.dataset.heroPreset = "custom";
+  heroImage.src = dataUrl;
+  localStorage.setItem("inviteHeroPreset", "custom");
+  localStorage.setItem("inviteHeroImage", dataUrl);
 
-  backgroundButtons.forEach((button) => {
+  heroPresetButtons.forEach((button) => {
     button.classList.remove("is-selected");
   });
 }
 
-function restoreBackground() {
-  const savedBackground = localStorage.getItem("inviteBackground") || "pink";
+function restoreHeroImage() {
+  const savedPreset = localStorage.getItem("inviteHeroPreset") || "sanrio";
 
-  if (savedBackground === "custom") {
-    const customBackground = localStorage.getItem("inviteCustomBackground");
+  if (savedPreset === "custom") {
+    const customHeroImage = localStorage.getItem("inviteHeroImage");
 
-    if (customBackground) {
-      setCustomBackground(customBackground);
+    if (customHeroImage) {
+      setCustomHeroImage(customHeroImage);
       return;
     }
   }
 
-  setBackground(savedBackground);
+  setHeroPreset(savedPreset);
 }
 
 function getTodayValue() {
@@ -331,7 +331,7 @@ async function downloadSummaryImage() {
 dateInput.min = getTodayValue();
 dateInput.value = getTodayValue();
 updateSelectedTime("17:00");
-restoreBackground();
+restoreHeroImage();
 
 noButton.addEventListener("pointerenter", teaseAndMove);
 noButton.addEventListener("pointerdown", teaseAndMove);
@@ -344,14 +344,14 @@ toSummaryButton.addEventListener("click", showSummary);
 downloadButton.addEventListener("click", downloadSummaryImage);
 restartButton.addEventListener("click", restartPlan);
 
-backgroundButtons.forEach((button) => {
+heroPresetButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    setBackground(button.dataset.bg);
+    setHeroPreset(button.dataset.heroPreset);
   });
 });
 
-bgUpload.addEventListener("change", () => {
-  const file = bgUpload.files[0];
+heroUpload.addEventListener("change", () => {
+  const file = heroUpload.files[0];
 
   if (!file) {
     return;
@@ -359,7 +359,7 @@ bgUpload.addEventListener("change", () => {
 
   const reader = new FileReader();
   reader.addEventListener("load", () => {
-    setCustomBackground(reader.result);
+    setCustomHeroImage(reader.result);
   });
   reader.readAsDataURL(file);
 });
