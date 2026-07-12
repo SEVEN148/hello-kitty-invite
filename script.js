@@ -468,7 +468,7 @@ function drawRoundedRect(context, x, y, width, height, radius) {
 
 function drawSummaryItem(context, label, value, x, y, width) {
   drawRoundedRect(context, x, y, width, 112, 14);
-  context.fillStyle = "rgba(255, 255, 255, 0.7)";
+  context.fillStyle = "rgba(255, 255, 255, 0.38)";
   context.fill();
   context.lineWidth = 4;
   context.strokeStyle = "#7a574d";
