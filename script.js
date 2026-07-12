@@ -35,6 +35,7 @@ const teasingCopy = [
   ["真的不选愿意吗？", "这里还有一整份可爱在等你。"],
 ];
 
+const defaultHeroImage = "./assets/sanrio-characters.png";
 const steps = [inviteCard, enterCard, timeCard, foodCard, placeCard, summaryCard];
 const selectedPlan = {
   date: "",
@@ -53,13 +54,15 @@ function showStep(activeStep) {
 
 function setHeroPreset(presetName) {
   imageFrame.dataset.heroPreset = presetName;
-  heroImage.src = "./assets/sanrio-characters.png";
+  heroImage.src = defaultHeroImage;
   localStorage.setItem("inviteHeroPreset", presetName);
   localStorage.removeItem("inviteHeroImage");
 
   heroPresetButtons.forEach((button) => {
     button.classList.toggle("is-selected", button.dataset.heroPreset === presetName);
   });
+
+  applySummaryBackground();
 }
 
 function setCustomHeroImage(dataUrl) {
@@ -71,6 +74,46 @@ function setCustomHeroImage(dataUrl) {
   heroPresetButtons.forEach((button) => {
     button.classList.remove("is-selected");
   });
+
+  applySummaryBackground();
+}
+
+function getHeroTheme() {
+  return {
+    preset: imageFrame.dataset.heroPreset || "sanrio",
+    imageUrl: heroImage.currentSrc || heroImage.src || defaultHeroImage,
+  };
+}
+
+function getThemeBackground(theme) {
+  if (theme.preset === "soft") {
+    return `
+      linear-gradient(rgba(255, 253, 245, 0.8), rgba(255, 253, 245, 0.88)),
+      radial-gradient(circle at 22% 24%, #ffffff 0 6%, transparent 7%),
+      radial-gradient(circle at 76% 28%, #ffe88d 0 7%, transparent 8%),
+      radial-gradient(circle at 46% 70%, #ffffff 0 8%, transparent 9%),
+      linear-gradient(135deg, #ffe0ee 0%, #fff7cf 54%, #fff 100%)
+    `;
+  }
+
+  if (theme.preset === "fresh") {
+    return `
+      linear-gradient(rgba(255, 253, 245, 0.8), rgba(255, 253, 245, 0.88)),
+      radial-gradient(circle at 28% 30%, #ffffff 0 7%, transparent 8%),
+      radial-gradient(circle at 78% 72%, #fff6b8 0 8%, transparent 9%),
+      linear-gradient(135deg, #d9fff3 0%, #fffdf0 48%, #dff3ff 100%)
+    `;
+  }
+
+  return `linear-gradient(rgba(255, 253, 245, 0.76), rgba(255, 253, 245, 0.9)), url("${theme.imageUrl}")`;
+}
+
+function applySummaryBackground() {
+  const theme = getHeroTheme();
+  summaryCard.dataset.heroPreset = theme.preset;
+  summaryCard.style.backgroundImage = getThemeBackground(theme);
+  summaryCard.style.backgroundPosition = "center";
+  summaryCard.style.backgroundSize = "cover";
 }
 
 function restoreHeroImage() {
@@ -197,6 +240,7 @@ function showSummary() {
   summaryTime.textContent = selectedPlan.time || "-";
   summaryFood.textContent = selectedPlan.food || "-";
   summaryPlace.textContent = selectedPlan.place || "-";
+  applySummaryBackground();
   showStep(summaryCard);
 }
 
@@ -247,6 +291,70 @@ function drawSummaryItem(context, label, value, x, y, width) {
   context.fillText(value, x + 24, y + 82);
 }
 
+function loadCanvasImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
+function drawCoverImage(context, image, x, y, width, height) {
+  const imageRatio = image.naturalWidth / image.naturalHeight;
+  const boxRatio = width / height;
+  let sourceWidth = image.naturalWidth;
+  let sourceHeight = image.naturalHeight;
+  let sourceX = 0;
+  let sourceY = 0;
+
+  if (imageRatio > boxRatio) {
+    sourceWidth = image.naturalHeight * boxRatio;
+    sourceX = (image.naturalWidth - sourceWidth) / 2;
+  } else {
+    sourceHeight = image.naturalWidth / boxRatio;
+    sourceY = (image.naturalHeight - sourceHeight) / 2;
+  }
+
+  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+}
+
+async function drawSummaryBackground(context, width, height) {
+  const theme = getHeroTheme();
+
+  if (theme.preset === "soft" || theme.preset === "fresh") {
+    const gradient = context.createLinearGradient(0, 0, width, height);
+
+    if (theme.preset === "soft") {
+      gradient.addColorStop(0, "#ffe0ee");
+      gradient.addColorStop(0.54, "#fff7cf");
+      gradient.addColorStop(1, "#ffffff");
+    } else {
+      gradient.addColorStop(0, "#d9fff3");
+      gradient.addColorStop(0.48, "#fffdf0");
+      gradient.addColorStop(1, "#dff3ff");
+    }
+
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
+    return;
+  }
+
+  try {
+    const image = await loadCanvasImage(theme.imageUrl);
+    drawCoverImage(context, image, 0, 0, width, height);
+    context.fillStyle = "rgba(255, 253, 245, 0.76)";
+    context.fillRect(0, 0, width, height);
+  } catch {
+    const fallbackGradient = context.createLinearGradient(0, 0, width, height);
+    fallbackGradient.addColorStop(0, "#fff8e9");
+    fallbackGradient.addColorStop(0.5, "#fff0f6");
+    fallbackGradient.addColorStop(1, "#ecfbf6");
+    context.fillStyle = fallbackGradient;
+    context.fillRect(0, 0, width, height);
+  }
+}
+
 async function downloadSummaryImage() {
   downloadNote.textContent = "正在生成图片...";
   const canvas = document.createElement("canvas");
@@ -257,12 +365,7 @@ async function downloadSummaryImage() {
   canvas.width = width;
   canvas.height = height;
 
-  const gradient = context.createLinearGradient(0, 0, width, height);
-  gradient.addColorStop(0, "#fff8e9");
-  gradient.addColorStop(0.5, "#fff0f6");
-  gradient.addColorStop(1, "#ecfbf6");
-  context.fillStyle = gradient;
-  context.fillRect(0, 0, width, height);
+  await drawSummaryBackground(context, width, height);
 
   context.fillStyle = "rgba(255, 143, 188, 0.22)";
   context.beginPath();
