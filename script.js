@@ -276,7 +276,7 @@ function drawRoundedRect(context, x, y, width, height, radius) {
 
 function drawSummaryItem(context, label, value, x, y, width) {
   drawRoundedRect(context, x, y, width, 112, 14);
-  context.fillStyle = "#ffffff";
+  context.fillStyle = "rgba(255, 255, 255, 0.7)";
   context.fill();
   context.lineWidth = 4;
   context.strokeStyle = "#7a574d";
@@ -343,7 +343,7 @@ async function drawSummaryBackground(context, width, height) {
   try {
     const image = await loadCanvasImage(theme.imageUrl);
     drawCoverImage(context, image, 0, 0, width, height);
-    context.fillStyle = "rgba(255, 253, 245, 0.76)";
+    context.fillStyle = "rgba(255, 253, 245, 0.42)";
     context.fillRect(0, 0, width, height);
   } catch {
     const fallbackGradient = context.createLinearGradient(0, 0, width, height);
@@ -353,6 +353,29 @@ async function drawSummaryBackground(context, width, height) {
     context.fillStyle = fallbackGradient;
     context.fillRect(0, 0, width, height);
   }
+}
+
+function dataUrlToFile(dataUrl, filename) {
+  const [header, base64] = dataUrl.split(",");
+  const mimeMatch = header.match(/data:(.*?);base64/);
+  const mimeType = mimeMatch ? mimeMatch[1] : "image/png";
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return new File([bytes], filename, { type: mimeType });
+}
+
+function triggerImageDownload(dataUrl, filename) {
+  const link = document.createElement("a");
+  link.href = dataUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }
 
 async function downloadSummaryImage() {
@@ -381,7 +404,7 @@ async function downloadSummaryImage() {
   context.fill();
 
   drawRoundedRect(context, 80, 90, 740, 1080, 22);
-  context.fillStyle = "rgba(255, 253, 245, 0.94)";
+  context.fillStyle = "rgba(255, 253, 245, 0.62)";
   context.fill();
   context.lineWidth = 6;
   context.strokeStyle = "#7a574d";
@@ -402,7 +425,7 @@ async function downloadSummaryImage() {
 
   context.fillStyle = "#8a6e68";
   context.font = "700 28px Microsoft YaHei, sans-serif";
-  context.fillText("今天的可爱额度已经预约成功", 450, 400);
+  context.fillText("那就这样说定啦，期待我们的约会ing", 450, 400);
   context.textAlign = "left";
 
   drawSummaryItem(context, "DATE", summaryDate.textContent, 140, 490, 620);
@@ -422,13 +445,31 @@ async function downloadSummaryImage() {
     return;
   }
 
-  const link = document.createElement("a");
-  link.href = dataUrl;
-  link.download = "hello-kitty-date-plan.png";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  downloadNote.textContent = "图片已生成。手机上如未自动进相册，请在下载记录里保存图片。";
+  const filename = "hello-kitty-date-plan.png";
+  const file = dataUrlToFile(dataUrl, filename);
+
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: "约会计划",
+        text: "保存这张约会计划卡片",
+      });
+      downloadNote.textContent = "已打开手机保存面板，可以选择保存到相册。";
+      return;
+    } catch (error) {
+      if (error.name === "AbortError") {
+        downloadNote.textContent = "已取消保存，可以再次点击按钮重新打开。";
+        return;
+      }
+    }
+  }
+
+  triggerImageDownload(dataUrl, filename);
+  downloadNote.innerHTML =
+    '图片已生成。如果没有自动保存到相册，请在下载记录里保存，或<a href="' +
+    dataUrl +
+    '" target="_blank" rel="noopener">打开图片后长按保存</a>。';
 }
 
 dateInput.min = getTodayValue();
