@@ -22,6 +22,19 @@
           />
         </div>
 
+        <div class="background-tools" aria-label="更换主页背景">
+          <p>换一个背景</p>
+          <div class="bg-presets">
+            <button type="button" data-bg="pink">粉色</button>
+            <button type="button" data-bg="mint">薄荷</button>
+            <button type="button" data-bg="sunny">奶油</button>
+          </div>
+          <label class="upload-bg">
+            上传背景
+            <input id="bgUpload" type="file" accept="image/*" />
+          </label>
+        </div>
+
         <p class="kicker">for you</p>
         <h1 id="questionTitle">可以和我一起约会嘛？</h1>
         <p class="message" id="questionMessage">
@@ -38,8 +51,18 @@
         </div>
       </section>
 
+      <section class="enter-card" id="enterCard" hidden>
+        <div class="enter-glow" aria-hidden="true"></div>
+        <p class="kicker">ready?</p>
+        <h2>你真的愿意吗[流泪]</h2>
+        <p class="message">那我们开始吧</p>
+        <button class="tap-enter" id="startPlanButton" type="button">
+          点击进入
+        </button>
+      </section>
+
       <section class="flow-card" id="timeCard" hidden>
-        <p class="kicker">step 01</p>
+        <p class="kicker">step 02</p>
         <h2>我们什么时候出发？</h2>
         <p class="message">挑一个你喜欢的时间，我会准时带着好心情出现。</p>
 
@@ -67,7 +90,7 @@
       </section>
 
       <section class="flow-card" id="foodCard" hidden>
-        <p class="kicker">step 02</p>
+        <p class="kicker">step 03</p>
         <h2>我们吃点什么？</h2>
         <p class="message">挑一个今天的约会氛围。</p>
 
@@ -82,6 +105,28 @@
           <button type="button" data-food="小龙虾"><span>🦞</span>小龙虾</button>
           <button type="button" data-food="烧烤"><span>🍢</span>烧烤</button>
           <button type="button" data-food="其他"><span>🍌</span>其他</button>
+        </div>
+
+        <button class="choice-button yes-button next-button" id="toPlaceButton" type="button" disabled>
+          继续选地点
+        </button>
+      </section>
+
+      <section class="flow-card" id="placeCard" hidden>
+        <p class="kicker">step 04</p>
+        <h2>想去哪里玩？</h2>
+        <p class="message">选一个适合约会的小场景。</p>
+
+        <div class="place-grid" id="placeGrid">
+          <button type="button" data-place="电影院"><span>🎬</span>电影院</button>
+          <button type="button" data-place="公园"><span>🌳</span>公园</button>
+          <button type="button" data-place="游乐园"><span>🎡</span>游乐园</button>
+          <button type="button" data-place="咖啡店"><span>☕</span>咖啡店</button>
+          <button type="button" data-place="商场"><span>🛍️</span>商场</button>
+          <button type="button" data-place="海边"><span>🌊</span>海边</button>
+          <button type="button" data-place="书店"><span>📚</span>书店</button>
+          <button type="button" data-place="夜市"><span>🏮</span>夜市</button>
+          <button type="button" data-place="拍照打卡"><span>📷</span>拍照打卡</button>
         </div>
 
         <button class="choice-button yes-button next-button" id="toSummaryButton" type="button" disabled>
@@ -107,7 +152,18 @@
             <dt>Food</dt>
             <dd id="summaryFood">-</dd>
           </div>
+          <div>
+            <dt>Place</dt>
+            <dd id="summaryPlace">-</dd>
+          </div>
         </dl>
+
+        <button class="choice-button yes-button next-button" id="downloadButton" type="button">
+          下载到手机相册
+        </button>
+        <p class="download-note" id="downloadNote">
+          手机浏览器会下载图片，部分手机可在分享面板中保存到相册。
+        </p>
 
         <button class="choice-button no-button next-button" id="restartButton" type="button">
           重新选择

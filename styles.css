@@ -30,6 +30,31 @@ body {
     radial-gradient(circle at 84% 16%, rgba(155, 217, 204, 0.3), transparent 25%),
     radial-gradient(circle at 78% 82%, rgba(255, 232, 141, 0.38), transparent 28%),
     linear-gradient(135deg, #fff8e9 0%, #fff0f6 48%, #ecfbf6 100%);
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+}
+
+body[data-bg="mint"] {
+  background:
+    radial-gradient(circle at 14% 18%, rgba(167, 215, 243, 0.34), transparent 28%),
+    radial-gradient(circle at 82% 20%, rgba(255, 232, 141, 0.34), transparent 26%),
+    radial-gradient(circle at 74% 84%, rgba(255, 143, 188, 0.18), transparent 25%),
+    linear-gradient(135deg, #effffb 0%, #fffce9 48%, #edf5ff 100%);
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+}
+
+body[data-bg="sunny"] {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255, 143, 188, 0.2), transparent 26%),
+    radial-gradient(circle at 82% 24%, rgba(155, 217, 204, 0.2), transparent 27%),
+    radial-gradient(circle at 74% 78%, rgba(255, 232, 141, 0.48), transparent 30%),
+    linear-gradient(135deg, #fff8d9 0%, #fff2ed 48%, #f9fff2 100%);
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
 }
 
 body::before {
@@ -54,6 +79,7 @@ body::before {
 }
 
 .invite-card,
+.enter-card,
 .flow-card {
   position: relative;
   width: min(94vw, 520px);
@@ -70,6 +96,8 @@ body::before {
 
 .invite-card::before,
 .invite-card::after,
+.enter-card::before,
+.enter-card::after,
 .flow-card::before,
 .flow-card::after {
   position: absolute;
@@ -93,6 +121,68 @@ body::before {
   right: 30px;
   bottom: 28px;
   transform: scale(0.78) rotate(18deg);
+}
+
+.enter-card {
+  display: grid;
+  min-height: min(78vh, 640px);
+  place-items: center;
+  overflow: hidden;
+  padding: 56px 30px 46px;
+}
+
+.enter-card[hidden] {
+  display: none;
+}
+
+.enter-card::before {
+  left: 32px;
+  top: 32px;
+  transform: scale(0.85);
+}
+
+.enter-card::after {
+  right: 34px;
+  bottom: 34px;
+  transform: scale(0.85) rotate(18deg);
+}
+
+.enter-glow {
+  position: absolute;
+  inset: 20px;
+  border: 2px solid rgba(255, 143, 188, 0.28);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(circle at 50% 44%, rgba(255, 143, 188, 0.24), transparent 34%);
+  pointer-events: none;
+}
+
+.tap-enter {
+  position: relative;
+  min-width: 190px;
+  min-height: 56px;
+  border: 3px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.08rem;
+  font-weight: 900;
+  box-shadow: 5px 7px 0 rgba(70, 52, 47, 0.88);
+  animation: enterPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes enterPulse {
+  0%,
+  100% {
+    box-shadow: 5px 7px 0 rgba(70, 52, 47, 0.88);
+  }
+
+  50% {
+    box-shadow: 5px 7px 0 rgba(70, 52, 47, 0.88), 0 0 0 8px rgba(255, 143, 188, 0.18);
+  }
 }
 
 .ribbon {
@@ -162,6 +252,62 @@ body::before {
   font-weight: 800;
   letter-spacing: 0;
   text-transform: uppercase;
+}
+
+.background-tools {
+  display: grid;
+  gap: 10px;
+  width: min(100%, 390px);
+  margin: 0 auto 20px;
+  padding: 12px;
+  border: 3px solid rgba(122, 87, 77, 0.32);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.background-tools p {
+  margin: 0;
+  color: var(--soft-ink);
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+.bg-presets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.bg-presets button,
+.upload-bg {
+  min-height: 38px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 900;
+  box-shadow: 3px 4px 0 rgba(70, 52, 47, 0.56);
+}
+
+.bg-presets button.is-selected {
+  border-color: var(--pink-strong);
+  background: #ffd6e6;
+}
+
+.upload-bg {
+  display: grid;
+  place-items: center;
+}
+
+.upload-bg input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
 }
 
 h1,
@@ -336,7 +482,8 @@ h2 {
 }
 
 .time-slots button,
-.food-grid button {
+.food-grid button,
+.place-grid button {
   border: 3px solid var(--line);
   border-radius: 8px;
   background: #fff;
@@ -356,18 +503,21 @@ h2 {
 }
 
 .time-slots button:hover,
-.food-grid button:hover {
+.food-grid button:hover,
+.place-grid button:hover {
   transform: translateY(-2px);
   box-shadow: 5px 8px 0 rgba(70, 52, 47, 0.88);
 }
 
 .time-slots button.is-selected,
-.food-grid button.is-selected {
+.food-grid button.is-selected,
+.place-grid button.is-selected {
   border-color: var(--pink-strong);
   background: #ffd6e6;
 }
 
-.food-grid {
+.food-grid,
+.place-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
@@ -375,7 +525,8 @@ h2 {
   margin: 2px auto 0;
 }
 
-.food-grid button {
+.food-grid button,
+.place-grid button {
   display: grid;
   min-height: 92px;
   place-items: center;
@@ -383,7 +534,8 @@ h2 {
   padding: 10px;
 }
 
-.food-grid span {
+.food-grid span,
+.place-grid span {
   display: block;
   font-size: 1.8rem;
   line-height: 1;
@@ -419,7 +571,7 @@ h2 {
 }
 
 .date-plan div:last-child {
-  grid-column: 1 / -1;
+  grid-column: auto;
 }
 
 .date-plan dt {
@@ -437,12 +589,22 @@ h2 {
   font-weight: 900;
 }
 
+.download-note {
+  max-width: 340px;
+  margin: 0 auto;
+  color: var(--soft-ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
 @media (max-width: 520px) {
   .page-shell {
     padding: 18px 14px;
   }
 
   .invite-card,
+  .enter-card,
   .flow-card {
     box-shadow: 8px 8px 0 rgba(122, 87, 77, 0.16);
   }
@@ -453,6 +615,8 @@ h2 {
 
   .invite-card::before,
   .invite-card::after,
+  .enter-card::before,
+  .enter-card::after,
   .flow-card::before,
   .flow-card::after {
     width: 34px;
@@ -500,7 +664,12 @@ h2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .food-grid button {
+  .place-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .food-grid button,
+  .place-grid button {
     min-height: 82px;
   }
 }
