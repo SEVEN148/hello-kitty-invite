@@ -7,6 +7,63 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <button class="edit-toggle" id="editToggle" type="button">编辑文字</button>
+
+    <aside class="edit-panel" id="editPanel" hidden>
+      <div class="edit-panel-header">
+        <h2>页面文字</h2>
+        <button id="closeEditorButton" type="button" aria-label="关闭编辑面板">×</button>
+      </div>
+
+      <label>
+        首页小标题
+        <input id="editInviteKicker" type="text" />
+      </label>
+      <label>
+        首页标题
+        <input id="editInviteTitle" type="text" />
+      </label>
+      <label>
+        首页描述
+        <textarea id="editInviteMessage" rows="2"></textarea>
+      </label>
+
+      <label>
+        食物页标题
+        <input id="editFoodTitle" type="text" />
+      </label>
+      <label>
+        食物页描述
+        <textarea id="editFoodMessage" rows="2"></textarea>
+      </label>
+      <label>
+        食物选项
+        <textarea id="editFoodOptions" rows="6"></textarea>
+      </label>
+
+      <label>
+        地点页标题
+        <input id="editPlaceTitle" type="text" />
+      </label>
+      <label>
+        地点页描述
+        <textarea id="editPlaceMessage" rows="2"></textarea>
+      </label>
+      <label>
+        地点选项
+        <textarea id="editPlaceOptions" rows="6"></textarea>
+      </label>
+
+      <div class="edit-actions">
+        <button class="choice-button yes-button" id="saveTextButton" type="button">
+          保存文字
+        </button>
+        <button class="choice-button no-button" id="resetTextButton" type="button">
+          恢复默认
+        </button>
+      </div>
+    </aside>
+
     <main class="page-shell">
       <section class="invite-card" id="inviteCard" aria-live="polite">
         <div class="ribbon" aria-hidden="true">

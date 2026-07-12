@@ -13,6 +13,20 @@ const imageFrame = document.querySelector(".image-frame");
 const heroImage = document.querySelector(".hero-image");
 const heroUpload = document.querySelector("#heroUpload");
 const heroPresetButtons = document.querySelectorAll(".bg-presets button");
+const editToggle = document.querySelector("#editToggle");
+const editPanel = document.querySelector("#editPanel");
+const closeEditorButton = document.querySelector("#closeEditorButton");
+const saveTextButton = document.querySelector("#saveTextButton");
+const resetTextButton = document.querySelector("#resetTextButton");
+const editInviteKicker = document.querySelector("#editInviteKicker");
+const editInviteTitle = document.querySelector("#editInviteTitle");
+const editInviteMessage = document.querySelector("#editInviteMessage");
+const editFoodTitle = document.querySelector("#editFoodTitle");
+const editFoodMessage = document.querySelector("#editFoodMessage");
+const editFoodOptions = document.querySelector("#editFoodOptions");
+const editPlaceTitle = document.querySelector("#editPlaceTitle");
+const editPlaceMessage = document.querySelector("#editPlaceMessage");
+const editPlaceOptions = document.querySelector("#editPlaceOptions");
 const startPlanButton = document.querySelector("#startPlanButton");
 const dateInput = document.querySelector("#dateInput");
 const timeInput = document.querySelector("#timeInput");
@@ -36,7 +50,7 @@ const teasingCopy = [
 ];
 
 // 修改这里的文字，就可以调整首页、食物页、地点页的显示内容。
-const pageText = {
+const defaultPageText = {
   invite: {
     kicker: "FOR YOU",
     title: "可以和我一起约会嘛？",
@@ -81,6 +95,8 @@ const pageText = {
   },
 };
 
+let pageText = structuredClone(defaultPageText);
+
 const defaultHeroImage = "./assets/sanrio-characters.png";
 const steps = [inviteCard, enterCard, timeCard, foodCard, placeCard, summaryCard];
 const selectedPlan = {
@@ -108,6 +124,100 @@ function createChoiceButton(item, dataName) {
   button.append(icon, item.label);
 
   return button;
+}
+
+function cloneDefaultText() {
+  return structuredClone(defaultPageText);
+}
+
+function mergePageText(savedText) {
+  return {
+    invite: { ...defaultPageText.invite, ...savedText.invite },
+    food: {
+      ...defaultPageText.food,
+      ...savedText.food,
+      options: Array.isArray(savedText.food?.options)
+        ? savedText.food.options
+        : defaultPageText.food.options,
+    },
+    place: {
+      ...defaultPageText.place,
+      ...savedText.place,
+      options: Array.isArray(savedText.place?.options)
+        ? savedText.place.options
+        : defaultPageText.place.options,
+    },
+  };
+}
+
+function loadSavedPageText() {
+  const savedText = localStorage.getItem("invitePageText");
+
+  if (!savedText) {
+    pageText = cloneDefaultText();
+    return;
+  }
+
+  try {
+    pageText = mergePageText(JSON.parse(savedText));
+  } catch {
+    pageText = cloneDefaultText();
+  }
+}
+
+function formatOptionsForEditor(options) {
+  return options.map((item) => `${item.icon} ${item.label}`).join("\n");
+}
+
+function parseEditableOptions(value, fallbackOptions) {
+  const options = value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [icon, ...labelParts] = line.split(/\s+/);
+      const label = labelParts.join(" ").trim();
+      return {
+        icon: label ? icon : "♡",
+        label: label || icon,
+      };
+    });
+
+  return options.length ? options : fallbackOptions;
+}
+
+function fillEditorFields() {
+  editInviteKicker.value = pageText.invite.kicker;
+  editInviteTitle.value = pageText.invite.title;
+  editInviteMessage.value = pageText.invite.message;
+  editFoodTitle.value = pageText.food.title;
+  editFoodMessage.value = pageText.food.message;
+  editFoodOptions.value = formatOptionsForEditor(pageText.food.options);
+  editPlaceTitle.value = pageText.place.title;
+  editPlaceMessage.value = pageText.place.message;
+  editPlaceOptions.value = formatOptionsForEditor(pageText.place.options);
+}
+
+function saveEditorFields() {
+  pageText = mergePageText({
+    invite: {
+      kicker: editInviteKicker.value.trim() || defaultPageText.invite.kicker,
+      title: editInviteTitle.value.trim() || defaultPageText.invite.title,
+      message: editInviteMessage.value.trim() || defaultPageText.invite.message,
+    },
+    food: {
+      title: editFoodTitle.value.trim() || defaultPageText.food.title,
+      message: editFoodMessage.value.trim() || defaultPageText.food.message,
+      options: parseEditableOptions(editFoodOptions.value, defaultPageText.food.options),
+    },
+    place: {
+      title: editPlaceTitle.value.trim() || defaultPageText.place.title,
+      message: editPlaceMessage.value.trim() || defaultPageText.place.message,
+      options: parseEditableOptions(editPlaceOptions.value, defaultPageText.place.options),
+    },
+  });
+  localStorage.setItem("invitePageText", JSON.stringify(pageText));
+  renderPageText();
 }
 
 function renderPageText() {
@@ -556,6 +666,7 @@ async function downloadSummaryImage() {
 
 dateInput.min = getTodayValue();
 dateInput.value = getTodayValue();
+loadSavedPageText();
 renderPageText();
 updateSelectedTime("17:00");
 restoreHeroImage();
@@ -570,6 +681,27 @@ toPlaceButton.addEventListener("click", showPlaceStep);
 toSummaryButton.addEventListener("click", showSummary);
 downloadButton.addEventListener("click", downloadSummaryImage);
 restartButton.addEventListener("click", restartPlan);
+
+editToggle.addEventListener("click", () => {
+  fillEditorFields();
+  editPanel.hidden = false;
+});
+
+closeEditorButton.addEventListener("click", () => {
+  editPanel.hidden = true;
+});
+
+saveTextButton.addEventListener("click", () => {
+  saveEditorFields();
+  editPanel.hidden = true;
+});
+
+resetTextButton.addEventListener("click", () => {
+  localStorage.removeItem("invitePageText");
+  pageText = cloneDefaultText();
+  renderPageText();
+  fillEditorFields();
+});
 
 heroPresetButtons.forEach((button) => {
   button.addEventListener("click", () => {
