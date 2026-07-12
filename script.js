@@ -35,6 +35,52 @@ const teasingCopy = [
   ["真的不选愿意吗？", "这里还有一整份可爱在等你。"],
 ];
 
+// 修改这里的文字，就可以调整首页、食物页、地点页的显示内容。
+const pageText = {
+  invite: {
+    kicker: "FOR YOU",
+    title: "可以和我一起约会嘛？",
+    message: "今天的心情是粉色的，想把最可爱的位置留给你。",
+    yesButton: "愿意",
+    noButton: "不要",
+  },
+  food: {
+    kicker: "STEP 03",
+    title: "我们吃点什么？",
+    message: "挑一个今天的约会氛围。",
+    nextButton: "继续选地点",
+    options: [
+      { icon: "🍕", label: "披萨" },
+      { icon: "🍣", label: "寿司" },
+      { icon: "🥘", label: "火锅" },
+      { icon: "🥩", label: "烤肉" },
+      { icon: "🥟", label: "早茶" },
+      { icon: "🍜", label: "拉面" },
+      { icon: "🌶️", label: "麻辣烫" },
+      { icon: "🦞", label: "小龙虾" },
+      { icon: "🍢", label: "烧烤" },
+      { icon: "🍌", label: "其他" },
+    ],
+  },
+  place: {
+    kicker: "STEP 04",
+    title: "想去哪里玩？",
+    message: "选一个适合约会的小场景。",
+    nextButton: "生成约会卡",
+    options: [
+      { icon: "🎬", label: "电影院" },
+      { icon: "🌳", label: "公园" },
+      { icon: "🎡", label: "游乐园" },
+      { icon: "☕", label: "咖啡店" },
+      { icon: "🛍️", label: "商场" },
+      { icon: "🌊", label: "海边" },
+      { icon: "📚", label: "书店" },
+      { icon: "🏮", label: "夜市" },
+      { icon: "📷", label: "拍照打卡" },
+    ],
+  },
+};
+
 const defaultHeroImage = "./assets/sanrio-characters.png";
 const steps = [inviteCard, enterCard, timeCard, foodCard, placeCard, summaryCard];
 const selectedPlan = {
@@ -50,6 +96,42 @@ function showStep(activeStep) {
   steps.forEach((step) => {
     step.hidden = step !== activeStep;
   });
+}
+
+function createChoiceButton(item, dataName) {
+  const button = document.createElement("button");
+  const icon = document.createElement("span");
+
+  button.type = "button";
+  button.dataset[dataName] = item.label;
+  icon.textContent = item.icon;
+  button.append(icon, item.label);
+
+  return button;
+}
+
+function renderPageText() {
+  inviteCard.querySelector(".kicker").textContent = pageText.invite.kicker;
+  questionTitle.textContent = pageText.invite.title;
+  questionMessage.textContent = pageText.invite.message;
+  yesButton.textContent = pageText.invite.yesButton;
+  noButton.textContent = pageText.invite.noButton;
+
+  foodCard.querySelector(".kicker").textContent = pageText.food.kicker;
+  foodCard.querySelector("h2").textContent = pageText.food.title;
+  foodCard.querySelector(".message").textContent = pageText.food.message;
+  toPlaceButton.textContent = pageText.food.nextButton;
+  foodGrid.replaceChildren(
+    ...pageText.food.options.map((item) => createChoiceButton(item, "food")),
+  );
+
+  placeCard.querySelector(".kicker").textContent = pageText.place.kicker;
+  placeCard.querySelector("h2").textContent = pageText.place.title;
+  placeCard.querySelector(".message").textContent = pageText.place.message;
+  toSummaryButton.textContent = pageText.place.nextButton;
+  placeGrid.replaceChildren(
+    ...pageText.place.options.map((item) => createChoiceButton(item, "place")),
+  );
 }
 
 function setHeroPreset(presetName) {
@@ -474,6 +556,7 @@ async function downloadSummaryImage() {
 
 dateInput.min = getTodayValue();
 dateInput.value = getTodayValue();
+renderPageText();
 updateSelectedTime("17:00");
 restoreHeroImage();
 
