@@ -345,40 +345,6 @@ body::before {
   border-radius: 6px;
 }
 
-.image-frame[data-hero-preset="soft"] {
-  background:
-    radial-gradient(circle at 22% 24%, #ffffff 0 6%, transparent 7%),
-    radial-gradient(circle at 76% 28%, #ffe88d 0 7%, transparent 8%),
-    radial-gradient(circle at 46% 70%, #ffffff 0 8%, transparent 9%),
-    linear-gradient(135deg, #ffe0ee 0%, #fff7cf 54%, #fff 100%);
-}
-
-.image-frame[data-hero-preset="fresh"] {
-  background:
-    radial-gradient(circle at 28% 30%, #ffffff 0 7%, transparent 8%),
-    radial-gradient(circle at 78% 72%, #fff6b8 0 8%, transparent 9%),
-    linear-gradient(135deg, #d9fff3 0%, #fffdf0 48%, #dff3ff 100%);
-}
-
-.image-frame[data-hero-preset="soft"] .hero-image,
-.image-frame[data-hero-preset="fresh"] .hero-image {
-  opacity: 0;
-}
-
-.image-frame[data-hero-preset="soft"]::after,
-.image-frame[data-hero-preset="fresh"]::after {
-  position: absolute;
-  inset: 10px;
-  display: grid;
-  place-items: center;
-  border-radius: 6px;
-  color: var(--line);
-  content: "约会背景";
-  font-size: 2rem;
-  font-weight: 900;
-  z-index: 0;
-}
-
 .kicker {
   margin: 0 0 8px;
   color: var(--pink-strong);
@@ -406,13 +372,6 @@ body::before {
   font-weight: 900;
 }
 
-.bg-presets {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.bg-presets button,
 .upload-bg {
   min-height: 38px;
   border: 2px solid var(--line);
@@ -424,11 +383,6 @@ body::before {
   font-size: 0.9rem;
   font-weight: 900;
   box-shadow: 3px 4px 0 rgba(70, 52, 47, 0.56);
-}
-
-.bg-presets button.is-selected {
-  border-color: var(--pink-strong);
-  background: #ffd6e6;
 }
 
 .upload-bg {

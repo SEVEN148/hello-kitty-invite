@@ -12,7 +12,6 @@ const questionMessage = document.querySelector("#questionMessage");
 const imageFrame = document.querySelector(".image-frame");
 const heroImage = document.querySelector(".hero-image");
 const heroUpload = document.querySelector("#heroUpload");
-const heroPresetButtons = document.querySelectorAll(".bg-presets button");
 const editToggle = document.querySelector("#editToggle");
 const editPanel = document.querySelector("#editPanel");
 const closeEditorButton = document.querySelector("#closeEditorButton");
@@ -27,6 +26,10 @@ const editFoodOptions = document.querySelector("#editFoodOptions");
 const editPlaceTitle = document.querySelector("#editPlaceTitle");
 const editPlaceMessage = document.querySelector("#editPlaceMessage");
 const editPlaceOptions = document.querySelector("#editPlaceOptions");
+const editSummaryTitle = document.querySelector("#editSummaryTitle");
+const editSummaryMessage = document.querySelector("#editSummaryMessage");
+const editBackgroundOpacity = document.querySelector("#editBackgroundOpacity");
+const opacityValue = document.querySelector("#opacityValue");
 const startPlanButton = document.querySelector("#startPlanButton");
 const dateInput = document.querySelector("#dateInput");
 const timeInput = document.querySelector("#timeInput");
@@ -93,6 +96,11 @@ const defaultPageText = {
       { icon: "📷", label: "拍照打卡" },
     ],
   },
+  summary: {
+    title: "约会计划完成",
+    message: "那就这样说定啦，期待我们的约会ing。",
+    backgroundOpacity: 42,
+  },
 };
 
 let pageText = structuredClone(defaultPageText);
@@ -147,6 +155,13 @@ function mergePageText(savedText) {
         ? savedText.place.options
         : defaultPageText.place.options,
     },
+    summary: {
+      ...defaultPageText.summary,
+      ...savedText.summary,
+      backgroundOpacity: Number.isFinite(Number(savedText.summary?.backgroundOpacity))
+        ? Number(savedText.summary.backgroundOpacity)
+        : defaultPageText.summary.backgroundOpacity,
+    },
   };
 }
 
@@ -196,6 +211,10 @@ function fillEditorFields() {
   editPlaceTitle.value = pageText.place.title;
   editPlaceMessage.value = pageText.place.message;
   editPlaceOptions.value = formatOptionsForEditor(pageText.place.options);
+  editSummaryTitle.value = pageText.summary.title;
+  editSummaryMessage.value = pageText.summary.message;
+  editBackgroundOpacity.value = pageText.summary.backgroundOpacity;
+  opacityValue.textContent = pageText.summary.backgroundOpacity;
 }
 
 function saveEditorFields() {
@@ -215,9 +234,15 @@ function saveEditorFields() {
       message: editPlaceMessage.value.trim() || defaultPageText.place.message,
       options: parseEditableOptions(editPlaceOptions.value, defaultPageText.place.options),
     },
+    summary: {
+      title: editSummaryTitle.value.trim() || defaultPageText.summary.title,
+      message: editSummaryMessage.value.trim() || defaultPageText.summary.message,
+      backgroundOpacity: Number(editBackgroundOpacity.value),
+    },
   });
   localStorage.setItem("invitePageText", JSON.stringify(pageText));
   renderPageText();
+  applySummaryBackground();
 }
 
 function renderPageText() {
@@ -242,17 +267,16 @@ function renderPageText() {
   placeGrid.replaceChildren(
     ...pageText.place.options.map((item) => createChoiceButton(item, "place")),
   );
+
+  summaryCard.querySelector("h2").textContent = pageText.summary.title;
+  summaryCard.querySelector("p").textContent = pageText.summary.message;
 }
 
-function setHeroPreset(presetName) {
-  imageFrame.dataset.heroPreset = presetName;
+function setDefaultHeroImage() {
+  imageFrame.dataset.heroPreset = "sanrio";
   heroImage.src = defaultHeroImage;
-  localStorage.setItem("inviteHeroPreset", presetName);
+  localStorage.setItem("inviteHeroPreset", "sanrio");
   localStorage.removeItem("inviteHeroImage");
-
-  heroPresetButtons.forEach((button) => {
-    button.classList.toggle("is-selected", button.dataset.heroPreset === presetName);
-  });
 
   applySummaryBackground();
 }
@@ -262,10 +286,6 @@ function setCustomHeroImage(dataUrl) {
   heroImage.src = dataUrl;
   localStorage.setItem("inviteHeroPreset", "custom");
   localStorage.setItem("inviteHeroImage", dataUrl);
-
-  heroPresetButtons.forEach((button) => {
-    button.classList.remove("is-selected");
-  });
 
   applySummaryBackground();
 }
@@ -278,26 +298,8 @@ function getHeroTheme() {
 }
 
 function getThemeBackground(theme) {
-  if (theme.preset === "soft") {
-    return `
-      linear-gradient(rgba(255, 253, 245, 0.8), rgba(255, 253, 245, 0.88)),
-      radial-gradient(circle at 22% 24%, #ffffff 0 6%, transparent 7%),
-      radial-gradient(circle at 76% 28%, #ffe88d 0 7%, transparent 8%),
-      radial-gradient(circle at 46% 70%, #ffffff 0 8%, transparent 9%),
-      linear-gradient(135deg, #ffe0ee 0%, #fff7cf 54%, #fff 100%)
-    `;
-  }
-
-  if (theme.preset === "fresh") {
-    return `
-      linear-gradient(rgba(255, 253, 245, 0.8), rgba(255, 253, 245, 0.88)),
-      radial-gradient(circle at 28% 30%, #ffffff 0 7%, transparent 8%),
-      radial-gradient(circle at 78% 72%, #fff6b8 0 8%, transparent 9%),
-      linear-gradient(135deg, #d9fff3 0%, #fffdf0 48%, #dff3ff 100%)
-    `;
-  }
-
-  return `linear-gradient(rgba(255, 253, 245, 0.76), rgba(255, 253, 245, 0.9)), url("${theme.imageUrl}")`;
+  const opacity = Math.min(Math.max(pageText.summary.backgroundOpacity, 0), 85) / 100;
+  return `linear-gradient(rgba(255, 253, 245, ${opacity}), rgba(255, 253, 245, ${opacity})), url("${theme.imageUrl}")`;
 }
 
 function applySummaryBackground() {
@@ -320,7 +322,7 @@ function restoreHeroImage() {
     }
   }
 
-  setHeroPreset(savedPreset);
+  setDefaultHeroImage();
 }
 
 function getTodayValue() {
@@ -513,29 +515,12 @@ function drawCoverImage(context, image, x, y, width, height) {
 
 async function drawSummaryBackground(context, width, height) {
   const theme = getHeroTheme();
-
-  if (theme.preset === "soft" || theme.preset === "fresh") {
-    const gradient = context.createLinearGradient(0, 0, width, height);
-
-    if (theme.preset === "soft") {
-      gradient.addColorStop(0, "#ffe0ee");
-      gradient.addColorStop(0.54, "#fff7cf");
-      gradient.addColorStop(1, "#ffffff");
-    } else {
-      gradient.addColorStop(0, "#d9fff3");
-      gradient.addColorStop(0.48, "#fffdf0");
-      gradient.addColorStop(1, "#dff3ff");
-    }
-
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, width, height);
-    return;
-  }
+  const opacity = Math.min(Math.max(pageText.summary.backgroundOpacity, 0), 85) / 100;
 
   try {
     const image = await loadCanvasImage(theme.imageUrl);
     drawCoverImage(context, image, 0, 0, width, height);
-    context.fillStyle = "rgba(255, 253, 245, 0.42)";
+    context.fillStyle = `rgba(255, 253, 245, ${opacity})`;
     context.fillRect(0, 0, width, height);
   } catch {
     const fallbackGradient = context.createLinearGradient(0, 0, width, height);
@@ -613,11 +598,11 @@ async function downloadSummaryImage() {
 
   context.fillStyle = "#46342f";
   context.font = "900 56px Microsoft YaHei, sans-serif";
-  context.fillText("约会计划完成", 450, 340);
+  context.fillText(pageText.summary.title, 450, 340);
 
   context.fillStyle = "#8a6e68";
   context.font = "700 28px Microsoft YaHei, sans-serif";
-  context.fillText("那就这样说定啦，期待我们的约会ing", 450, 400);
+  context.fillText(pageText.summary.message.replace(/[。.]$/, ""), 450, 400);
   context.textAlign = "left";
 
   drawSummaryItem(context, "DATE", summaryDate.textContent, 140, 490, 620);
@@ -700,13 +685,14 @@ resetTextButton.addEventListener("click", () => {
   localStorage.removeItem("invitePageText");
   pageText = cloneDefaultText();
   renderPageText();
+  applySummaryBackground();
   fillEditorFields();
 });
 
-heroPresetButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    setHeroPreset(button.dataset.heroPreset);
-  });
+editBackgroundOpacity.addEventListener("input", () => {
+  opacityValue.textContent = editBackgroundOpacity.value;
+  pageText.summary.backgroundOpacity = Number(editBackgroundOpacity.value);
+  applySummaryBackground();
 });
 
 heroUpload.addEventListener("change", () => {

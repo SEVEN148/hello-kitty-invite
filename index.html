@@ -54,6 +54,19 @@
         <textarea id="editPlaceOptions" rows="6"></textarea>
       </label>
 
+      <label>
+        完成页标题
+        <input id="editSummaryTitle" type="text" />
+      </label>
+      <label>
+        完成页描述
+        <textarea id="editSummaryMessage" rows="2"></textarea>
+      </label>
+      <label>
+        背景透明度 <span id="opacityValue">42</span>
+        <input id="editBackgroundOpacity" type="range" min="0" max="85" step="1" />
+      </label>
+
       <div class="edit-actions">
         <button class="choice-button yes-button" id="saveTextButton" type="button">
           保存文字
@@ -81,11 +94,6 @@
 
         <div class="background-tools" aria-label="更换顶部图片">
           <p>换一个背景</p>
-          <div class="bg-presets">
-            <button type="button" data-hero-preset="sanrio">原图</button>
-            <button type="button" data-hero-preset="soft">柔粉</button>
-            <button type="button" data-hero-preset="fresh">清新</button>
-          </div>
           <label class="upload-bg">
             上传图片
             <input id="heroUpload" type="file" accept="image/*" />
