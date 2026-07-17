@@ -518,19 +518,29 @@ function updateSelectedTime(timeValue) {
   });
 }
 
+function updateChoiceDeck(grid, selectedButton) {
+  grid.querySelectorAll(".choice-select").forEach((button) => {
+    const isSelected = button === selectedButton;
+    button.classList.toggle("is-selected", isSelected);
+    button.closest(".choice-card")?.classList.toggle("is-selected", isSelected);
+  });
+
+  selectedButton.closest(".choice-card")?.scrollIntoView({
+    behavior: "smooth",
+    block: "nearest",
+    inline: "center",
+  });
+}
+
 function selectFood(button) {
   selectedPlan.food = button.dataset.food;
-  foodGrid.querySelectorAll("button").forEach((foodButton) => {
-    foodButton.classList.toggle("is-selected", foodButton === button);
-  });
+  updateChoiceDeck(foodGrid, button);
   toPlaceButton.disabled = false;
 }
 
 function selectPlace(button) {
   selectedPlan.place = button.dataset.place;
-  placeGrid.querySelectorAll("button").forEach((placeButton) => {
-    placeButton.classList.toggle("is-selected", placeButton === button);
-  });
+  updateChoiceDeck(placeGrid, button);
   toSummaryButton.disabled = false;
 }
 
@@ -558,11 +568,13 @@ function restartPlan() {
   selectedPlan.time = timeInput.value;
   selectedPlan.food = "";
   selectedPlan.place = "";
-  foodGrid.querySelectorAll("button").forEach((button) => {
+  foodGrid.querySelectorAll(".choice-select").forEach((button) => {
     button.classList.remove("is-selected");
+    button.closest(".choice-card")?.classList.remove("is-selected");
   });
-  placeGrid.querySelectorAll("button").forEach((button) => {
+  placeGrid.querySelectorAll(".choice-select").forEach((button) => {
     button.classList.remove("is-selected");
+    button.closest(".choice-card")?.classList.remove("is-selected");
   });
   toPlaceButton.disabled = true;
   toSummaryButton.disabled = true;
