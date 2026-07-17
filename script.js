@@ -20,6 +20,14 @@ const resetTextButton = document.querySelector("#resetTextButton");
 const editInviteKicker = document.querySelector("#editInviteKicker");
 const editInviteTitle = document.querySelector("#editInviteTitle");
 const editInviteMessage = document.querySelector("#editInviteMessage");
+const editYesButton = document.querySelector("#editYesButton");
+const editNoButton = document.querySelector("#editNoButton");
+const editEnterTitle = document.querySelector("#editEnterTitle");
+const editEnterMessage = document.querySelector("#editEnterMessage");
+const editEnterButton = document.querySelector("#editEnterButton");
+const editTimeTitle = document.querySelector("#editTimeTitle");
+const editTimeMessage = document.querySelector("#editTimeMessage");
+const editTimeButton = document.querySelector("#editTimeButton");
 const editFoodTitle = document.querySelector("#editFoodTitle");
 const editFoodMessage = document.querySelector("#editFoodMessage");
 const editFoodOptions = document.querySelector("#editFoodOptions");
@@ -60,6 +68,18 @@ const defaultPageText = {
     message: "今天的心情是粉色的，想把最可爱的位置留给你。",
     yesButton: "愿意",
     noButton: "不要",
+  },
+  enter: {
+    kicker: "READY?",
+    title: "你真的愿意吗[流泪]",
+    message: "那我们开始吧",
+    button: "点击进入",
+  },
+  time: {
+    kicker: "STEP 02",
+    title: "我们什么时候出发？",
+    message: "挑一个你喜欢的时间，我会准时带着好心情出现。",
+    nextButton: "选好啦",
   },
   food: {
     kicker: "STEP 03",
@@ -106,6 +126,7 @@ const defaultPageText = {
 let pageText = structuredClone(defaultPageText);
 
 const defaultHeroImage = "./assets/sanrio-characters.png";
+let optionImages = {};
 const steps = [inviteCard, enterCard, timeCard, foodCard, placeCard, summaryCard];
 const selectedPlan = {
   date: "",
@@ -123,15 +144,77 @@ function showStep(activeStep) {
 }
 
 function createChoiceButton(item, dataName) {
+  const card = document.createElement("div");
   const button = document.createElement("button");
   const icon = document.createElement("span");
+  const label = document.createElement("strong");
+  const uploadLabel = document.createElement("label");
+  const uploadInput = document.createElement("input");
 
+  card.className = "choice-card";
   button.type = "button";
+  button.className = "choice-select";
   button.dataset[dataName] = item.label;
   icon.textContent = item.icon;
-  button.append(icon, item.label);
+  label.textContent = item.label;
+  button.append(icon, label);
+  applyOptionBackground(button, dataName, item.label);
 
-  return button;
+  uploadLabel.className = "option-upload";
+  uploadLabel.title = "替换这个选项的背景";
+  uploadLabel.textContent = "🖼️";
+  uploadInput.type = "file";
+  uploadInput.accept = "image/*";
+  uploadInput.dataset.optionType = dataName;
+  uploadInput.dataset.optionLabel = item.label;
+  uploadLabel.append(uploadInput);
+
+  card.append(button, uploadLabel);
+  return card;
+}
+
+function getOptionImageKey(optionType, optionLabel) {
+  return `${optionType}:${optionLabel}`;
+}
+
+function loadOptionImages() {
+  try {
+    optionImages = JSON.parse(localStorage.getItem("inviteOptionImages")) || {};
+  } catch {
+    optionImages = {};
+  }
+}
+
+function saveOptionImages() {
+  localStorage.setItem("inviteOptionImages", JSON.stringify(optionImages));
+}
+
+function applyOptionBackground(button, optionType, optionLabel) {
+  const image = optionImages[getOptionImageKey(optionType, optionLabel)];
+
+  if (image) {
+    button.style.backgroundImage = `url("${image}")`;
+  } else {
+    button.style.backgroundImage = "";
+  }
+}
+
+function updateOptionImage(input) {
+  const file = input.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    optionImages[getOptionImageKey(input.dataset.optionType, input.dataset.optionLabel)] =
+      reader.result;
+    saveOptionImages();
+    const button = input.closest(".choice-card").querySelector(".choice-select");
+    applyOptionBackground(button, input.dataset.optionType, input.dataset.optionLabel);
+  });
+  reader.readAsDataURL(file);
 }
 
 function cloneDefaultText() {
@@ -141,6 +224,8 @@ function cloneDefaultText() {
 function mergePageText(savedText) {
   return {
     invite: { ...defaultPageText.invite, ...savedText.invite },
+    enter: { ...defaultPageText.enter, ...savedText.enter },
+    time: { ...defaultPageText.time, ...savedText.time },
     food: {
       ...defaultPageText.food,
       ...savedText.food,
@@ -205,6 +290,14 @@ function fillEditorFields() {
   editInviteKicker.value = pageText.invite.kicker;
   editInviteTitle.value = pageText.invite.title;
   editInviteMessage.value = pageText.invite.message;
+  editYesButton.value = pageText.invite.yesButton;
+  editNoButton.value = pageText.invite.noButton;
+  editEnterTitle.value = pageText.enter.title;
+  editEnterMessage.value = pageText.enter.message;
+  editEnterButton.value = pageText.enter.button;
+  editTimeTitle.value = pageText.time.title;
+  editTimeMessage.value = pageText.time.message;
+  editTimeButton.value = pageText.time.nextButton;
   editFoodTitle.value = pageText.food.title;
   editFoodMessage.value = pageText.food.message;
   editFoodOptions.value = formatOptionsForEditor(pageText.food.options);
@@ -223,6 +316,18 @@ function saveEditorFields() {
       kicker: editInviteKicker.value.trim() || defaultPageText.invite.kicker,
       title: editInviteTitle.value.trim() || defaultPageText.invite.title,
       message: editInviteMessage.value.trim() || defaultPageText.invite.message,
+      yesButton: editYesButton.value.trim() || defaultPageText.invite.yesButton,
+      noButton: editNoButton.value.trim() || defaultPageText.invite.noButton,
+    },
+    enter: {
+      title: editEnterTitle.value.trim() || defaultPageText.enter.title,
+      message: editEnterMessage.value.trim() || defaultPageText.enter.message,
+      button: editEnterButton.value.trim() || defaultPageText.enter.button,
+    },
+    time: {
+      title: editTimeTitle.value.trim() || defaultPageText.time.title,
+      message: editTimeMessage.value.trim() || defaultPageText.time.message,
+      nextButton: editTimeButton.value.trim() || defaultPageText.time.nextButton,
     },
     food: {
       title: editFoodTitle.value.trim() || defaultPageText.food.title,
@@ -251,6 +356,16 @@ function renderPageText() {
   questionMessage.textContent = pageText.invite.message;
   yesButton.textContent = pageText.invite.yesButton;
   noButton.textContent = pageText.invite.noButton;
+
+  enterCard.querySelector(".kicker").textContent = pageText.enter.kicker;
+  enterCard.querySelector("h2").textContent = pageText.enter.title;
+  enterCard.querySelector(".message").textContent = pageText.enter.message;
+  startPlanButton.textContent = pageText.enter.button;
+
+  timeCard.querySelector(".kicker").textContent = pageText.time.kicker;
+  timeCard.querySelector("h2").textContent = pageText.time.title;
+  timeCard.querySelector(".message").textContent = pageText.time.message;
+  toFoodButton.textContent = pageText.time.nextButton;
 
   foodCard.querySelector(".kicker").textContent = pageText.food.kicker;
   foodCard.querySelector("h2").textContent = pageText.food.title;
@@ -652,6 +767,7 @@ async function downloadSummaryImage() {
 dateInput.min = getTodayValue();
 dateInput.value = getTodayValue();
 loadSavedPageText();
+loadOptionImages();
 renderPageText();
 updateSelectedTime("17:00");
 restoreHeroImage();
@@ -727,10 +843,22 @@ foodGrid.addEventListener("click", (event) => {
   }
 });
 
+foodGrid.addEventListener("change", (event) => {
+  if (event.target.matches(".option-upload input")) {
+    updateOptionImage(event.target);
+  }
+});
+
 placeGrid.addEventListener("click", (event) => {
   const button = event.target.closest("button");
 
   if (button) {
     selectPlace(button);
+  }
+});
+
+placeGrid.addEventListener("change", (event) => {
+  if (event.target.matches(".option-upload input")) {
+    updateOptionImage(event.target);
   }
 });
